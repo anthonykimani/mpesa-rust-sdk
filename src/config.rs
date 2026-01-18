@@ -1,5 +1,5 @@
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum Environment {
     Production,
     Sandbox
@@ -17,18 +17,18 @@ impl Config {
     pub fn new(
         consumer_key: impl Into<String>,
         consumer_secret: impl Into<String>,
-        environment: impl Into<Environment>,
+        environment: Environment,
     ) -> Self {
         Self {
             consumer_key: consumer_key.into(),
             consumer_secret: consumer_secret.into(),
-            environment: environment.into(),
+            environment: environment,
         }
     }
 
     pub fn base_url(&self) -> &str {
         match self.environment {
-            Environment::Production => "https://api.safaricom.co.ke"
+            Environment::Production => "https://api.safaricom.co.ke",
             Environment::Sandbox => "https://sandbox.safaricom.co.ke"
         }
     }
