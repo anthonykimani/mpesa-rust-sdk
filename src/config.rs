@@ -28,7 +28,8 @@ impl Config {
 
     pub fn base_url(&self) -> &str {
         match self.environment {
-            
+            Environment::Production => "https://api.safaricom.co.ke"
+            Environment::Sandbox => "https://sandbox.safaricom.co.ke"
         }
     }
 }
