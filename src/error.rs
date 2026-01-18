@@ -1,5 +1,5 @@
 
-enum MpesaError {
+pub enum MpesaError {
     MissingConsumerKey,
     MissingConsumerSecret
 }

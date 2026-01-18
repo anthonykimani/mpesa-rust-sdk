@@ -1,5 +1,6 @@
 mod config;
 mod mpesa;
+mod error;
 
 pub use config::Config;
 pub use mpesa::Mpesa;
