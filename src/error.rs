@@ -1,0 +1,5 @@
+
+enum MpesaError {
+    MissingConsumerKey,
+    MissingConsumerSecret
+}
