@@ -1,4 +1,4 @@
-use crate::config::Config;
+use crate::config::{Config, Environment};
 use crate::error::MpesaError;
 
 
@@ -24,6 +24,13 @@ impl Mpesa {
     }
 
     pub fn account_balance(&self) -> Result<(), MpesaError> {
+        Ok(())
+    }
+
+    pub fn c2b_simulate(&self) -> Result<(), MpesaError> {
+        if self.config.environment == Environment::Production {
+            return Err(MpesaError::NotAllowedInProduction)
+        }
         Ok(())
     }
 

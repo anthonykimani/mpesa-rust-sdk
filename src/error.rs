@@ -1,5 +1,6 @@
 
 pub enum MpesaError {
     MissingConsumerKey,
-    MissingConsumerSecret
+    MissingConsumerSecret,
+    NotAllowedInProduction
 }
