@@ -2,5 +2,7 @@
 pub enum MpesaError {
     MissingConsumerKey,
     MissingConsumerSecret,
-    NotAllowedInProduction
+    NotAllowedInProduction,
+    RequestFailed,
+    JsonParseFailed
 }

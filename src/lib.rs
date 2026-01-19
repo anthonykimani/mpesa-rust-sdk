@@ -1,6 +1,7 @@
 pub mod config;
 pub mod mpesa;
 pub mod error;
+pub mod types;
 
 pub use config::{Config, Environment};
 pub use mpesa::Mpesa;

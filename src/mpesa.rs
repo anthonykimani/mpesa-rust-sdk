@@ -28,11 +28,11 @@ impl Mpesa {
         })
     }
 
-    pub fn account_balance(&self) -> Result<(), MpesaError> {
+    pub async fn account_balance(&self) -> Result<(), MpesaError> {
         Ok(())
     }
 
-    pub fn c2b_simulate(&self) -> Result<(), MpesaError> {
+    pub async fn c2b_simulate(&self) -> Result<(), MpesaError> {
         if self.config.environment == Environment::Production {
             return Err(MpesaError::NotAllowedInProduction)
         }
@@ -41,6 +41,13 @@ impl Mpesa {
 
     pub fn base_url(&self) -> &str {
         self.config.base_url()
+    }
+
+    async fn request_helper(&self, path: &str) -> Result<String, MpesaError> {
+        let url = format!("{}{}", self.base_url(), path);
+        let response = self.client.get(url).send().await.map_err(|_| MpesaError::RequestFailed)?;
+        let body = response.text().await.map_err(|_| MpesaError::RequestFailed)?;
+        Ok(body)
     }
 
 }
