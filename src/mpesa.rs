@@ -1,3 +1,5 @@
+
+use reqwest::{Client};
 use crate::config::{Config, Environment};
 use crate::error::MpesaError;
 
@@ -5,7 +7,7 @@ use crate::error::MpesaError;
 #[derive(Debug, Clone)]
 pub struct Mpesa {
     config: Config,
-
+    client: Client
 }
 
 impl Mpesa {
@@ -18,8 +20,11 @@ impl Mpesa {
             return Err(MpesaError::MissingConsumerSecret);
         }
 
+        let client = Client::new();
+
         Ok(Self {
-            config
+            config,
+            client
         })
     }
 
