@@ -11,16 +11,20 @@ pub struct Mpesa {
 impl Mpesa {
     pub fn new(config: Config) -> Result<Self, MpesaError> {
         if config.consumer_key.is_empty() {
-            return Err(MpesaError::MissingConsumerKey)
+            return Err(MpesaError::MissingConsumerKey);
         }
 
         if config.consumer_secret.is_empty() {
-            return Err(MpesaError::MissingConsumerSecret)
+            return Err(MpesaError::MissingConsumerSecret);
         }
 
         Ok(Self {
             config
         })
+    }
+
+    pub fn account_balance(&self) -> Result<(), MpesaError> {
+        Ok(())
     }
 
 }
