@@ -34,4 +34,8 @@ impl Mpesa {
         Ok(())
     }
 
+    pub fn base_url(&self) -> &str {
+        self.config.base_url()
+    }
+
 }

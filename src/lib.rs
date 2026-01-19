@@ -1,9 +1,10 @@
-mod config;
-mod mpesa;
-mod error;
+pub mod config;
+pub mod mpesa;
+pub mod error;
 
-pub use config::Config;
+pub use config::{Config, Environment};
 pub use mpesa::Mpesa;
+pub use error::MpesaError;
 
 
 
