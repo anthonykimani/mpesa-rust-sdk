@@ -1,13 +1,12 @@
-
-use reqwest::{Client};
 use crate::config::{Config, Environment};
 use crate::error::MpesaError;
-
+use crate::types::TokenResponse;
+use reqwest::Client;
 
 #[derive(Debug, Clone)]
 pub struct Mpesa {
     config: Config,
-    client: Client
+    client: Client,
 }
 
 impl Mpesa {
@@ -22,10 +21,7 @@ impl Mpesa {
 
         let client = Client::new();
 
-        Ok(Self {
-            config,
-            client
-        })
+        Ok(Self { config, client })
     }
 
     pub async fn account_balance(&self) -> Result<(), MpesaError> {
@@ -34,7 +30,7 @@ impl Mpesa {
 
     pub async fn c2b_simulate(&self) -> Result<(), MpesaError> {
         if self.config.environment == Environment::Production {
-            return Err(MpesaError::NotAllowedInProduction)
+            return Err(MpesaError::NotAllowedInProduction);
         }
         Ok(())
     }
@@ -43,11 +39,42 @@ impl Mpesa {
         self.config.base_url()
     }
 
-    async fn request_helper(&self, path: &str) -> Result<String, MpesaError> {
+    pub async fn oauth(&self) -> Result<TokenResponse, MpesaError> {
+        let path = "/oauth/v1/generate?grant_type=client_credentials";
         let url = format!("{}{}", self.base_url(), path);
-        let response = self.client.get(url).send().await.map_err(|_| MpesaError::RequestFailed)?;
-        let body = response.text().await.map_err(|_| MpesaError::RequestFailed)?;
-        Ok(body)
+        let response = self
+            .client
+            .get(url)
+            .basic_auth(
+                self.config.consumer_key.clone(),
+                Some(self.config.consumer_secret.clone()),
+            )
+            .send()
+            .await
+            .map_err(|_| MpesaError::RequestFailed)?;
+
+        if !response.status().is_success() {
+            return Err(MpesaError::RequestFailed);
+        }
+
+        Ok(response
+            .json::<TokenResponse>()
+            .await
+            .map_err(|_| MpesaError::JsonParseFailed)?)
     }
 
+    async fn request_helper(&self, path: &str) -> Result<String, MpesaError> {
+        let url = format!("{}{}", self.base_url(), path);
+        let response = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .map_err(|_| MpesaError::RequestFailed)?;
+        let body = response
+            .text()
+            .await
+            .map_err(|_| MpesaError::RequestFailed)?;
+        Ok(body)
+    }
 }
