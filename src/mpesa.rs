@@ -2,6 +2,8 @@ use crate::config::{Config, Environment};
 use crate::error::MpesaError;
 use crate::types::TokenResponse;
 use reqwest::Client;
+use serde::Serialize;
+use serde::de::DeserializeOwned;
 
 #[derive(Debug, Clone)]
 pub struct Mpesa {
@@ -81,8 +83,39 @@ impl Mpesa {
     async fn get_authed_text(&self, path: &str) -> Result<String, MpesaError> {
         let url = format!("{}{}", self.base_url(), path);
         let token = self.oauth().await?;
-        let response = self.client.get(url).bearer_auth(token.access_token).send().await.map_err(|_| MpesaError::RequestFailed)?;
-        let body = response.text().await.map_err(|_| MpesaError::RequestFailed)?;
+        let response = self
+            .client
+            .get(url)
+            .bearer_auth(token.access_token)
+            .send()
+            .await
+            .map_err(|_| MpesaError::RequestFailed)?;
+        let body = response
+            .text()
+            .await
+            .map_err(|_| MpesaError::RequestFailed)?;
+        Ok(body)
+    }
+
+    async fn post_json_helper<T, R>(&self, path: &str, body: &T) -> Result<R, MpesaError>
+    where
+        T: Serialize,
+        R: DeserializeOwned,
+    {
+        let url = format!("{}{}", self.base_url(), path);
+        let token = self.oauth().await?;
+        let response = self
+            .client
+            .post(url)
+            .bearer_auth(token.access_token)
+            .json(body)
+            .send()
+            .await
+            .map_err(|_| MpesaError::RequestFailed)?;
+        let body = response
+            .json::<R>()
+            .await
+            .map_err(|_| MpesaError::JsonParseFailed)?;
         Ok(body)
     }
 }
