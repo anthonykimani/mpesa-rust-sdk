@@ -77,4 +77,12 @@ impl Mpesa {
             .map_err(|_| MpesaError::RequestFailed)?;
         Ok(body)
     }
+
+    async fn get_authed_text(&self, path: &str) -> Result<String, MpesaError> {
+        let url = format!("{}{}", self.base_url(), path);
+        let token = self.oauth().await?;
+        let response = self.client.get(url).bearer_auth(token.access_token).send().await.map_err(|_| MpesaError::RequestFailed)?;
+        let body = response.text().await.map_err(|_| MpesaError::RequestFailed)?;
+        Ok(body)
+    }
 }
