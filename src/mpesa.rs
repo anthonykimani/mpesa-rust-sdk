@@ -1,6 +1,6 @@
 use crate::config::{Config, Environment};
 use crate::error::MpesaError;
-use crate::types::TokenResponse;
+use crate::types::{AccountBalanceRequest, AccountBalanceResponse, TokenResponse};
 use reqwest::Client;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -26,8 +26,9 @@ impl Mpesa {
         Ok(Self { config, client })
     }
 
-    pub async fn account_balance(&self) -> Result<(), MpesaError> {
-        Ok(())
+    pub async fn account_balance(&self, req: AccountBalanceRequest) -> Result<AccountBalanceResponse, MpesaError> {
+        let path = "/mpesa/accountbalance/v1/query";
+        self.post_json_helper(path, &req).await
     }
 
     pub async fn c2b_simulate(&self) -> Result<(), MpesaError> {
